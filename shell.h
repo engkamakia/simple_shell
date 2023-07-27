@@ -70,6 +70,11 @@ int line_parser(shell_t *data);
 int processor(shell_t *data);
 
 /* -------String0.c-----------*/
+char *strduplicate(char *c);
+char *conc_str(char *a, char *b);
+int _strlen(char *s);
+char *_strchr(char *str1, char str2);
+int strcompare(char *str1, char *str2);
 
 
 /* -------String1.c-------*/

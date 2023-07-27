@@ -2,8 +2,8 @@
 #define _SHELL_H_
 
 /* header files */
-#include <errno.h>
 #include <fcntl.h>
+#include <errno.h>
 #include <signal.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -14,12 +14,9 @@
 #include <unistd.h>
 
 
-
-
-
 extern char **environ;
 
-
+/* Macros */
 #define BUFSIZE 256
 #define FAIL (-1)
 #define NEUTRAL (0)
@@ -28,10 +25,22 @@ extern char **environ;
 #define SUCCESS (1)
 #define TOKENSIZE 64
 
+/* Struct */
 
-
-
-typedef struct shell_data
+/**
+ * struct sh_data - Global data structure
+ * @line: the line input
+ * @args: the arguments token
+ * @error_msg: the global path
+ * @cmd: the parsed command
+ * @index: the command index
+ * @oldpwd: the old path visited
+ * @env: the environnment
+ *
+ * Description: A structure contains all the variables needed to manage
+ * the program, memory and accessability
+ */
+typedef struct sh_data
 {
 	char *line;
 	char **args;
@@ -42,58 +51,61 @@ typedef struct shell_data
 	char *env;
 } shell_t;
 
-typedef struct built_in
+/**
+ * struct builtin - struct to manage the builtin functions.
+ * @cmd: command line on the string form.
+ * @f: function associated with struct.
+ *
+ * Description: A struct made to manage the builtins cmd's.
+ */
+typedef struct builtin
 {
 	char *cmd;
 	int (*f)(shell_t *data);
-} builtin_t;
-/* ----------Process prototype------------*/
-int read_line(shell_t *);
-int split_line(shell_t *);
-int parse_line(shell_t *);
-int process_cmd(shell_t *);
+} built_t;
+/* -------mainshell.c---------*/
+int line_reader(shell_t *data);
+int line_splitter(shell_t *);
+int line_parser(shell_t *data);
+int processor(shell_t *data);
 
-/* ----------String prototype------------*/
-char *_strdup(char *str);
-char *_strcat(char *first, char *second);
-int _strlen(char *str);
-char *_strchr(char *str, char c);
-int _strcmp(char *s1, char *s2);
+/* -------String0.c-----------*/
 
-/* ----------More String prototype-------*/
-char *_strcpy(char *dest, char *source);
 
-/* ----------Memory prototype------------*/
-void *_realloc(void *ptr, unsigned int old_size, unsigned int new_size);
-char *_memset(char *s, char byt, unsigned int n);
-char *_memcpy(char *dest, char *src, unsigned int n);
-int free_data(shell_t *);
+/* -------String1.c-------*/
+char *copy_str(char *destination, char *s);
 
-/* ----------Tools prototype-------------*/
-void *fill_an_array(void *a, int el, unsigned int len);
-void signal_handler(int signo);
-char *_getenv(char *path_name);
-void index_cmd(shell_t *data);
-void array_rev(char *arr, int len);
+/* -------Mem.c-------*/
+void *allocator(void *pointa, unsigned int prevSize, unsigned int size_n);
+char *setmem(char *str, char c, unsigned int j);
+char *copier(char *destination, char *source, unsigned int j);
+int clrmem(shell_t *data);
 
-/* ----------More tools prototype--------*/
-char *_itoa(unsigned int n);
-int intlen(int num);
-int _atoi(char *c);
-int print_error(shell_t *data);
-int write_history(shell_t *data);
-int _isalpha(int c);
+/* -------Tools0.c------*/
+void *arr_fill(void *arr, int elements, unsigned int length);
+void signal_handler(int sgn);
+char *get_environ(char *name);
+void indexing(shell_t *data);
+void reversed_arr(char *a, int length);
 
-/* -------------Builtins-----------------*/
-int abort_prg(shell_t *data);
-int change_dir(shell_t *data);
-int display_help(shell_t *data);
-int handle_builtin(shell_t *data);
-int check_builtin(shell_t *data);
+/* -------tools1.c-------*/
+char *int_converter(unsigned int ui);
+int lenFinder(int i);
+int array_converter(char *arr);
+int error(shell_t *data);
+int history(shell_t *data __attribute__((unused)));
+int alphabet(int c);
 
-/* -------------Parse-----------------*/
-int is_path_form(shell_t *data);
-void is_short_form(shell_t *data);
-int is_builtin(shell_t *data);
+/* --------Builtins0.c----------*/
+int abort(shell_t *data __attribute__((unused)));
+int cd(shell_t *data);
+int help_menu(shell_t *data);
+int builtin_handler(shell_t *data);
+int builtin_checker(shell_t *data);
 
-#endif
+/* ------Parse.c---------*/
+int path(shell_t *data);
+void short_form(shell_t *data);
+int built_in(shell_t *data);
+
+#endif /* SHELL_H */

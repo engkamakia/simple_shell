@@ -1,37 +1,37 @@
 #include "shell.h"
 /**
- * execute - execute a command with its entire path variables.
- * @data: a pointer to the program's data
- * Return: If sucess returns zero, otherwise, return -1.
+ * execute - funtion to execute a command with its entire path variables.
+ * @data: pointer pointing to the program's data
+ * Return: 0 on success, otherwise an error_code.
  */
-int execute(data_of_program *data)
+int execute(programme_data *data)
 {
-	int retval = 0, status;
-	pid_t pidd;
+	int _value = 0, status;
+	pid_t p;
 
 	/* check for program in built ins */
-	retval = builtins_list(data);
-	if (retval != -1)/* if program was found in built ins */
-		return (retval);
+	_value = builtins_list(data);
+	if (_value != -1)/* if program was found in built ins */
+		return (_value);
 
 	/* check for program file system */
-	retval = find_program(data);
-	if (retval)
+	_value = find_program(data);
+	if (_value)
 	{/* if program not found */
-		return (retval);
+		return (_value);
 	}
 	else
 	{/* if program was found */
-		pidd = fork(); /* create a child process */
-		if (pidd == -1)
+		p = fork(); /* create a child process */
+		if (p == -1)
 		{ /* if the fork call failed */
 			perror(data->command_name);
 			exit(EXIT_FAILURE);
 		}
-		if (pidd == 0)
+		if (p == 0)
 		{/* I am the child process, I execute the program*/
-			retval = execve(data->tokens[0], data->tokens, data->env);
-			if (retval == -1) /* if error when execve*/
+			_value = execve(data->tokens[0], data->tokens, data->env);
+			if (_value == -1) /* if error when execve*/
 				perror(data->command_name), exit(EXIT_FAILURE);
 		}
 		else
@@ -45,3 +45,4 @@ int execute(data_of_program *data)
 	}
 	return (0);
 }
+

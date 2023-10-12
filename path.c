@@ -3,15 +3,15 @@
 int check_file(char *full_path);
 
 /**
- * find_program - find a program in path
- * @data: a pointer to the program's data
- * Return: 0 if success, errcode otherwise
+ * find_program - A function to find a program in path
+ * @data: pointer pointing to the program's data
+ * Return: 0 if success, otherwise error_code
  */
 
-int find_program(data_of_program *data)
+int find_program(programme_data *data)
 {
-	int i = 0, ret_code = 0;
-	char **directories;
+	int x = 0, rate = 0;
+	char **folders;
 
 	if (!data->command_name)
 		return (2);
@@ -25,42 +25,42 @@ int find_program(data_of_program *data)
 	if (!data->tokens[0])
 		return (2);
 
-	directories = tokenize_path(data);/* search in the PATH */
+	folders = tokenize_path(data);/* search in the PATH */
 
-	if (!directories || !directories[0])
+	if (!folders || !folders[0])
 	{
 		errno = 127;
 		return (127);
 	}
-	for (i = 0; directories[i]; i++)
+	for (x = 0; folders[x]; x++)
 	{/* appends the function_name to path */
-		directories[i] = str_concat(directories[i], data->tokens[0]);
-		ret_code = check_file(directories[i]);
-		if (ret_code == 0 || ret_code == 126)
+		folders[x] = str_concat(folders[x], data->tokens[0]);
+		rate = check_file(folders[x]);
+		if (rate == 0 || rate == 126)
 		{/* the file was found, is not a directory and has execute permisions*/
 			errno = 0;
 			free(data->tokens[0]);
-			data->tokens[0] = str_duplicate(directories[i]);
-			free_array_of_pointers(directories);
-			return (ret_code);
+			data->tokens[0] = str_duplicate(folders[x]);
+			free_array_of_pointers(folders);
+			return (rate);
 		}
 	}
 	free(data->tokens[0]);
 	data->tokens[0] = NULL;
-	free_array_of_pointers(directories);
-	return (ret_code);
+	free_array_of_pointers(folders);
+	return (rate);
 }
 
 /**
- * tokenize_path - tokenize the path in directories
- * @data: a pointer to the program's data
- * Return: array of path directories
+ * tokenize_path - A function to tokenize the path in folders
+ * @data: pointer  pointing to the program's data
+ * Return: an array of path folder's
  */
 
-char **tokenize_path(data_of_program *data)
+char **tokenize_path(programme_data *data)
 {
-	int i = 0;
-	int counter_directories = 2;
+	int x = 0;
+	int no_of_folders = 2;
 	char **tokens = NULL;
 	char *PATH;
 
@@ -73,22 +73,22 @@ char **tokenize_path(data_of_program *data)
 
 	PATH = str_duplicate(PATH);
 
-	/* find the number of directories in the PATH */
-	for (i = 0; PATH[i]; i++)
+	/* find the number of folders in the PATH */
+	for (x = 0; PATH[x]; x++)
 	{
-		if (PATH[i] == ':')
-			counter_directories++;
+		if (PATH[x] == ':')
+			no_of_folders++;
 	}
 
 	/* reserve space for the array of pointers */
-	tokens = malloc(sizeof(char *) * counter_directories);
+	tokens = malloc(sizeof(char *) * no_of_folders);
 
 	/*tokenize and duplicate each token of path*/
-	i = 0;
-	tokens[i] = str_duplicate(_strtok(PATH, ":"));
-	while (tokens[i++])
+	x = 0;
+	tokens[x] = str_duplicate(_strtok(PATH, ":"));
+	while (tokens[x++])
 	{
-		tokens[i] = str_duplicate(_strtok(NULL, ":"));
+		tokens[x] = str_duplicate(_strtok(NULL, ":"));
 	}
 
 	free(PATH);
@@ -98,10 +98,10 @@ char **tokenize_path(data_of_program *data)
 }
 
 /**
- * check_file - checks if exists a file, if it is not a dairectory and
- * if it has excecution permisions for permisions.
- * @full_path: pointer to the full file name
- * Return: 0 on success, or error code if it exists.
+ * check_file - A function to check if file exists, if not a directory and
+ * if it has excecution permisions .
+ * @full_path: pointer pointing to the full file name
+ * Return: 0 on success, otherwise an error_code.
  */
 
 int check_file(char *full_path)
@@ -117,7 +117,7 @@ int check_file(char *full_path)
 		}
 		return (0);
 	}
-	/*if not exist the file*/
+	/*if not exit the file*/
 	errno = 127;
 	return (127);
 }

@@ -1,19 +1,19 @@
 #include "shell.h"
 
 /**
- * builtin_exit - exit of the program with the status
- * @data: struct for the program's data
- * Return: zero if sucess, or other number if its declared in the arguments
+ * builtin_exit - A function to exit program with the status
+ * @data: A struct for the programme
+ * Return: 0 on success, otherwise an error_code.
  */
-int builtin_exit(data_of_program *data)
+int builtin_exit(programme_data *data)
 {
-	int i;
+	int x;
 
 	if (data->tokens[1] != NULL)
 	{/*if exists arg for exit, check if is a number*/
-		for (i = 0; data->tokens[1][i]; i++)
-			if ((data->tokens[1][i] < '0' || data->tokens[1][i] > '9')
-				&& data->tokens[1][i] != '+')
+		for (x = 0; data->tokens[1][x]; x++)
+			if ((data->tokens[1][x] < '0' || data->tokens[1][x] > '9')
+				&& data->tokens[1][x] != '+')
 			{/*if is not a number*/
 				errno = 2;
 				return (2);
@@ -25,15 +25,15 @@ int builtin_exit(data_of_program *data)
 }
 
 /**
- * builtin_cd - change the current directory
- * @data: struct for the program's data
- * Return: zero if sucess, or other number if its declared in the arguments
+ * builtin_cd - function to change the current directory
+ * @data: A struct for the programme
+ * Return: 0 on success, otherwise an error_code.
  */
-int builtin_cd(data_of_program *data)
+int builtin_cd(programme_data *data)
 {
-	char *dir_home = env_get_key("HOME", data), *dir_old = NULL;
-	char old_dir[128] = {0};
-	int error_code = 0;
+	char *home_directory = env_get_key("HOME", data), *dir_old = NULL;
+	char previous_directory[128] = {0};
+	int code_error = 0;
 
 	if (data->tokens[1])
 	{
@@ -41,11 +41,11 @@ int builtin_cd(data_of_program *data)
 		{
 			dir_old = env_get_key("OLDPWD", data);
 			if (dir_old)
-				error_code = set_work_directory(data, dir_old);
+				code_error = set_work_directory(data, dir_old);
 			_print(env_get_key("PWD", data));
 			_print("\n");
 
-			return (error_code);
+			return (code_error);
 		}
 		else
 		{
@@ -54,28 +54,28 @@ int builtin_cd(data_of_program *data)
 	}
 	else
 	{
-		if (!dir_home)
-			dir_home = getcwd(old_dir, 128);
+		if (!home_directory)
+			home_directory = getcwd(previous_directory, 128);
 
-		return (set_work_directory(data, dir_home));
+		return (set_work_directory(data, home_directory));
 	}
 	return (0);
 }
 
 /**
- * set_work_directory - set the work directory
- * @data: struct for the program's data
- * @new_dir: path to be set as work directory
- * Return: zero if sucess, or other number if its declared in the arguments
+ * set_work_directory - A function to set the work directory
+ * @data: A struct for the programme
+ * @new_dir: path to be set
+ * Return: 0 on success, otherwise an error_code.
  */
-int set_work_directory(data_of_program *data, char *new_dir)
+int set_work_directory(programme_data *data, char *new_dir)
 {
-	char old_dir[128] = {0};
+	char previous_directory[128] = {0};
 	int err_code = 0;
 
-	getcwd(old_dir, 128);
+	getcwd(previous_directory, 128);
 
-	if (!str_compare(old_dir, new_dir, 0))
+	if (!str_compare(previous_directory, new_dir, 0))
 	{
 		err_code = chdir(new_dir);
 		if (err_code == -1)
@@ -85,16 +85,16 @@ int set_work_directory(data_of_program *data, char *new_dir)
 		}
 		env_set_key("PWD", new_dir, data);
 	}
-	env_set_key("OLDPWD", old_dir, data);
+	env_set_key("OLDPWD", previous_directory, data);
 	return (0);
 }
 
 /**
- * builtin_help - shows the environment where the shell runs
- * @data: struct for the program's data
- * Return: zero if sucess, or other number if its declared in the arguments
+ * builtin_help - function that shows the environment ofshell
+ * @data: A struct for the programme
+ * Return: 0 on success, otherwise an error_code.
  */
-int builtin_help(data_of_program *data)
+int builtin_help(programme_data *data)
 {
 	int i, length = 0;
 	char *mensajes[6] = {NULL};
@@ -135,11 +135,11 @@ int builtin_help(data_of_program *data)
 }
 
 /**
- * builtin_alias - add, remove or show aliases
- * @data: struct for the program's data
- * Return: zero if sucess, or other number if its declared in the arguments
+ * builtin_alias - function to add, remove or show aliases
+ * @data: A struct for the programme
+ * Return: 0 on success, otherwise an error_code.
  */
-int builtin_alias(data_of_program *data)
+int builtin_alias(programme_data *data)
 {
 	int i = 0;
 

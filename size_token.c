@@ -1,42 +1,41 @@
 #include "shell.h"
 /**
- * _strtok - separates strings with delimiters
- * @line: It´s pointer to array we receive in getline.
- * @delim: It´s characters we mark off string in parts.
- * Return: A pointer to the created token
-*/
-char *_strtok(char *line, char *delim)
+ * tokenize - A function that separates the string using a limiter
+ * @data: pointer to the data
+ * Return: array of the different parts of the string
+ */
+void tokenize(programme_data *data)
 {
-	int j;
-	static char *str;
-	char *copystr;
+	char *limiter = " \t";
+	int x, y, count = 2, l;
 
-	if (line != NULL)
-		str = line;
-	for (; *str != '\0'; str++)
+	l = str_length(data->input_line);
+	if (l)
 	{
-		for (j = 0; delim[j] != '\0'; j++)
-		{
-			if (*str == delim[j])
-			break;
-		}
-		if (delim[j] == '\0')
-			break;
+		if (data->input_line[l - 1] == '\n')
+			data->input_line[l - 1] = '\0';
 	}
-	copystr = str;
-	if (*copystr == '\0')
-		return (NULL);
-	for (; *str != '\0'; str++)
+
+	for (x = 0; data->input_line[x]; x++)
 	{
-		for (j = 0; delim[j] != '\0'; j++)
+		for (y = 0; limiter[y]; y++)
 		{
-			if (*str == delim[j])
-			{
-				*str = '\0';
-				str++;
-				return (copystr);
-			}
+			if (data->input_line[x] == limiter[y])
+				count++;
 		}
 	}
-	return (copystr);
+
+	data->tokens = malloc(count * sizeof(char *));
+	if (data->tokens == NULL)
+	{
+		perror(data->program_name);
+		exit(errno);
+	}
+	x = 0;
+	data->tokens[x] = str_duplicate(_strtok(data->input_line, limiter));
+	data->command_name = str_duplicate(data->tokens[0]);
+	while (data->tokens[x++])
+	{
+		data->tokens[x] = str_duplicate(_strtok(NULL, limiter));
+	}
 }

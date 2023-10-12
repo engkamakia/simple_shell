@@ -1,45 +1,45 @@
 #include "shell.h"
 
 /**
- * builtin_env - shows the environment where the shell runs
- * @data: struct for the program's data
- * Return: zero if sucess, or other number if its declared in the arguments
+ * builtin_env - function that shows the environment of shell.
+ * @data: A struct for the programme
+ * Return: 0 on success, otherwise an error_code.
  */
-int builtin_env(data_of_program *data)
+int builtin_env(programme_data *data)
 {
-	int i;
-	char cpname[50] = {'\0'};
-	char *var_copy = NULL;
+	int x;
+	char copy_name[50] = {'\0'};
+	char *cpy_variable = NULL;
 
 	/* if not arguments */
 	if (data->tokens[1] == NULL)
 		print_environ(data);
 	else
 	{
-		for (i = 0; data->tokens[1][i]; i++)
+		for (x = 0; data->tokens[1][x]; x++)
 		{/* checks if exists a char = */
-			if (data->tokens[1][i] == '=')
+			if (data->tokens[1][x] == '=')
 			{/* checks if exists a var with the same name and change its value*/
 			/* temporally */
-				var_copy = str_duplicate(env_get_key(cpname, data));
-				if (var_copy != NULL)
-					env_set_key(cpname, data->tokens[1] + i + 1, data);
+				cpy_variable = str_duplicate(env_get_key(copy_name, data));
+				if (cpy_variable != NULL)
+					env_set_key(copy_name, data->tokens[1] + x + 1, data);
 
 				/* print the environ */
 				print_environ(data);
-				if (env_get_key(cpname, data) == NULL)
+				if (env_get_key(copy_name, data) == NULL)
 				{/* print the variable if it does not exist in the environ */
 					_print(data->tokens[1]);
 					_print("\n");
 				}
 				else
 				{/* returns the old value of the var*/
-					env_set_key(cpname, var_copy, data);
-					free(var_copy);
+					env_set_key(copy_name, cpy_variable, data);
+					free(cpy_variable);
 				}
 				return (0);
 			}
-			cpname[i] = data->tokens[1][i];
+			copy_name[x] = data->tokens[1][x];
 		}
 		errno = 2;
 		perror(data->command_name);
@@ -49,11 +49,11 @@ int builtin_env(data_of_program *data)
 }
 
 /**
- * builtin_set_env - ..
- * @data: struct for the program's data
- * Return: zero if sucess, or other number if its declared in the arguments
+ * builtin_set_env - function that sets the environment of shell.
+ * @data: @data: A struct for the programme
+ * Return: 0 on success, otherwise an error_code.
  */
-int builtin_set_env(data_of_program *data)
+int builtin_set_env(programme_data *data)
 {
 	/* validate args */
 	if (data->tokens[1] == NULL || data->tokens[2] == NULL)
@@ -71,11 +71,11 @@ int builtin_set_env(data_of_program *data)
 }
 
 /**
- * builtin_unset_env - ..
- * @data: struct for the program's data'
- * Return: ..
+ * builtin_unset_env - function that unsets the environment of shell.
+ * @data: @data: A struct for the programme
+ * Return: 0 on success, otherwise an error_code.
  */
-int builtin_unset_env(data_of_program *data)
+int builtin_unset_env(programme_data *data)
 {
 	/* validate args */
 	if (data->tokens[1] == NULL)
